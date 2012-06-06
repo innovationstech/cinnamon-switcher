@@ -1,5 +1,6 @@
 #!/bin/sh
 #File: cinnamon-switcher.sh
+#Version: 0.1
 #License: GPLv3
 #Description: Allows Ubuntu Unity style hotkey-based application 
 #launching/switching. It does this based on what's in your favorites menu.
