@@ -1,0 +1,29 @@
+#!/bin/sh
+#File: cinnamon-switcher.sh
+#License: GPLv3
+#Description: Allows Ubuntu Unity style hotkey-based application 
+#launching/switching. It does this based on what's in your favorites menu.
+#You can tie this script to a hotkey combo in keyboard preferences, and then
+#pass it the number of the app from the favorite menu to launch or switch to.
+#Example: 'cinnamon-switcher.sh 1'. /usr/local/bin is a good place to put this
+#script so that all users can access it.
+#Requires: xdotool (Available in the Mint 12 and 13 reporitories at least)
+
+#Get and save the name of the app that we want to launch or switch to
+#SWITCHAPP=$(gsettings list-recursively org.cinnamon | grep "favorite-apps" | \
+#            cut -d "[" -f 2 | cut -d "]" -f 1 | cut -d "," -f "$1")
+SWITCHAPP=$(gsettings list-recursively org.cinnamon | grep "favorite-apps" | \
+            sed 's/\(^.*\[\)\(.*\)\(\].*$\)/\2/' | cut -d "," -f "$1" | \
+	    cut -d "'" -f 2 | cut -d "." -f 1)
+
+#Check to see if the app needs to be switched to or launched
+if [ -z $(xdotool search -class "$SWITCHAPP" | head -1) ]; then
+    #Launch the app
+    exec $SWITCHAPP &
+else
+    #Compensation for a bug/misfeature in xdotool
+    WINDOWHANDLE=$(xdotool search -class "$SWITCHAPP" | tail -1) 
+    
+    #Switch to the app
+    xdotool windowactivate $WINDOWHANDLE
+fi
